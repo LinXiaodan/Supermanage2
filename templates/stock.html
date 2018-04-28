@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+    <div class="container" style="width: 1800px;">
+        <h2>库存量</h2>
+        <table class="table table-hover table-responsive">
+            <tr>
+                {% for var in info_list %}
+                    <th>{{ var }}</th>
+                {% endfor %}
+            </tr>
+            {% for goods_list in show_list %}
+                <tr>
+                {% for var in goods_list %}
+                    <td>{{ var }}</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

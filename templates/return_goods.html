@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block headmore %}
+    <script type="text/javascript" language="javascript">
+        var row_count = 0;
+        function addNew()   //添加新行
+        {
+            row_count++;
+            var table1 = $('#table1');
+            var row = $("<tr class='submitReturn'></tr>");
+            row.append("<td><input type='checkbox' name='count' value='New' placeholder=''></td>");
+            row.append("<td><input type='text' name='goods_id' placeholder=''></td>");
+            row.append("<td><input type='number' name='quantity' placeholder=''></td>");
+            row.append("<td><button class='btn btn-primary' type='button' onclick='delRow(this)'>删除</button></td>");
+            table1.append(row);
+        }
+        function delRow(obj)    //删除行
+        {
+            $(obj).parent().parent().remove();
+        }
+        function del()      //删除选中行
+        {
+            var checked = $("input[type='checkbox'][name='count']:checked");
+            $(checked).each(function(){
+                $(this).parent().parent().remove();
+            });
+        }
+        function formatDateTime(inputTime) {    //timestamp -> strip time
+            var date = new Date(inputTime);
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            var h = date.getHours();
+            h = h < 10 ? ('0' + h) : h;
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            minute = minute < 10 ? ('0' + minute) : minute;
+            second = second < 10 ? ('0' + second) : second;
+            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        }
+
+        function return_goods() {   //提交退货信息
+            var msg = {};
+            var count = 0;
+            $(".submitReturn").each(function () {
+               var id = $(this).find("input[type='text']").val();
+               var quantity = $(this).find("input[type='number']").val();
+               msg[count] = {'id': id, 'quantity': quantity};
+               count += 1;
+            });
+            $.post(
+                '/return_goods',
+                JSON.stringify(msg),
+                function(data){
+                    var sale_list = jQuery.parseJSON(data);
+                    // 打印退货单
+                    var result = $("<div class='panel panel-default'> <div class='panel-heading'> <h2 class='panel-title'>销售单 </h2></div> </div>");
+                    var body = $("<div class='panel-body'></div>");
+                    body.append("<div>单号：" + sale_list['return_id'] + "</div>");
+                    body.append("<div>退货员：" + sale_list['username'] + "</div>");
+                    body.append("<div>时间：" + formatDateTime(parseInt(sale_list['time'])*1000) + "</div>");
+                    var table = $("<table class='table'><tr><th>编号</th><th>名称</th><th>进货价</th><th>数量</th><th>金额</th></tr></table>");
+                    var list = sale_list['list'];
+                    $.each(list,function(name,value) {
+                        var row = $("<tr></tr>");
+                        row.append("<td>" + value['goods_id'] + "</td>");
+                        row.append("<td>" + value['goods_name'] + "</td>");
+                        row.append("<td>" + value['buying_price'] + "</td>");
+                        row.append("<td>" + value['goods_quantity'] + "</td>");
+                        row.append("<td>" + value['tot_price'] + "</td>");
+                        table.append(row);
+                    });
+                    body.append(table);
+                    body.append("<div>总额：" + sale_list['total'] + "</div>");
+                    result.append(body);
+                    $("table input").each(function () {   //清空输入的内容
+                        $(this).val("");
+                    });
+                    $("#result").html(result);
+                }
+            );
+        }
+    </script>
+{% endblock %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+    <div class="container" style="width: 600px;">
+        <h2>退货</h2>
+        <input class="btn btn-primary" type="button" value="添加" onclick="addNew();">
+        <input class="btn btn-primary" type="button" value="删除" onclick="del();">
+        <form id="submitForm">
+            <table id="table1" class="table">
+            <tr>
+                <th></th>
+                <th>编号</th>
+                <th>数量</th>
+            </tr>
+            <tr class="submitReturn">
+                <td><input type="checkbox" name="count" value="New" placeholder=""></td>
+                <td><input type="text" name="goods_id" placeholder=""></td>
+                <td><input type="number" name="quantity" placeholder=""></td>
+                <td><button class="btn btn-primary" type="button" onclick="delRow(this)">删除</button></td>
+            </tr>
+        </table>
+        </form>
+    <button class="btn btn-primary" type="button" onclick="return_goods();">退货</button>
+        <hr>
+        <div id="result"></div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+<div class="container" style="width: 400px">
+
+      <form class="form-addgoods" method="post" action="/add_goods">
+          <h2 class="form-addgoods-heading">添加商品</h2>
+          编号：<input id="inputGoodsId" class="form-control" placeholder="请输入编号" required autofocus name="goods_id">
+          种类：
+          <select name="goods_type" id="selectGoodsType">
+              {% for goods_type in goodstype_list %}
+                  <option value="{{ goods_type }}">{{ goods_type }}</option>
+              {% endfor %}
+          </select><br>
+          名称：<input id="inputGoodsName" class="form-control" placeholder="请输入名称" required name="goods_name">
+          单位：<input id="inputGoodsId" class="form-control" placeholder="请输入单位" required name="unit">
+          进货价：<input id="inputGoodsId" class="form-control" placeholder="请输入进货价" required name="buying_price" type="number" step="0.01">
+          售价：<input id="inputGoodsId" class="form-control" placeholder="请输入售价" required name="price" type="number" step="0.01">
+          <button class="btn btn-lg btn-primary btn-block" type="submit">添加</button>
+      </form>
+<p>{{ msg }}</p>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{#添加用户界面#}
+{% block container %}
+<div class="container" style="width: 300px">
+
+      <form class="form-add" method="post" action="/add_user">
+        <h2 class="form-add-heading">添加用户</h2>
+        等级：<select name="user_level">
+                <option value="admin">管理</option>
+                <option value="normal">普通</option>
+            </select><br>
+        用户名：<input id="inputUsername" class="form-control" placeholder="请输入用户名" required autofocus name="username">
+        密码：<input type="password" id="inputPassword" class="form-control" placeholder="请输入密码" required name="password">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">确认添加</button>
+      </form>
+<p style="color: red">{{ msg }}</p>
+</div>
+{% endblock %}

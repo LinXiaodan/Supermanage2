@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+<div class="container" style="width: 300px">
+
+      <form class="form-addtype" method="post" action="/add_type">
+        <h2 class="form-addtype-heading">添加商品种类</h2>
+        <input id="inputTypename" class="form-control" placeholder="请输入种类名称" required autofocus name="type">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">添加</button>
+      </form>
+<p>{{ msg }}</p>
+</div>
+{% endblock %}
