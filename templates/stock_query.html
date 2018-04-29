@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block headmore %}
+    <script type="text/javascript" language="javascript">
+        function query(){   //查询库存信息
+            var goods_id = $('#inputGoodsId').val();
+            var msg = {'goods_id': goods_id};
+            $.post(
+                '/query_stock',
+                JSON.stringify(msg),
+                function (data) {
+                    var query_list = jQuery.parseJSON(data);
+                    var query_status = query_list['status'];
+                    if(query_status === 'fail'){
+                        $('#result').html('查询失败，请检查商品编号是否正确或稍后重试');
+                    }
+                    else{
+                        var info_list = query_list['info_list'];
+                        var show_list = query_list['show_list'];
+                        var table = $("<table class='table table-hover table-responsive'></table>");
+                        var row1 = $("<tr></tr>");
+                        for(var i = 0;i<info_list.length;i++){
+                            row1.append("<th>" + info_list[i] + "</th>");
+                        }
+                        var row2 = $("<tr></tr>");
+                        for(var i = 0;i<show_list.length;i++){
+                            row2.append("<td>" + show_list[i] + "</td>");
+                        }
+                        table.append(row1);
+                        table.append(row2);
+                       $('#result').html(table);
+                    }
+                }
+            )
+        }
+    </script>
+{% endblock %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+    <div class="container" style="width: 1800px;">
+        <div style="width: 300px; margin-left: auto; margin-right: auto">
+            <h2>库存查询</h2>
+            <form class="form-addtype" method="post" action="/add_type">
+                <input id="inputGoodsId" class="form-control" placeholder="请输入商品编号" required autofocus name="goods_id">
+                <button class="btn btn-lg btn-primary btn-block" type="button" onclick="query();">查询</button>
+            </form>
+        </div>
+        <br>
+        <div id="result"></div>
+    </div>
+{% endblock %}

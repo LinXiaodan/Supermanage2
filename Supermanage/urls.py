@@ -22,7 +22,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', view.login),
     url(r'^$', view.login),
-    url(r'stock', view.stock),
     url(r'add_type', view.add_type),
     url(r'add_goods', view.add_goods),
     url(r'sale', view.sale),
@@ -30,5 +29,7 @@ urlpatterns = [
     url(r'add_user', view.add_user),
     url(r'return_goods', view.return_goods),
     url(r'buy', view.buy),
-    url(r'logout', view.logout)
+    url(r'logout', view.logout),
+    url(r'query_stock', view.stock_query),
+    url(r'stock', view.stock)
 ]
