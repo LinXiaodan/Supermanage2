@@ -243,6 +243,25 @@ def return_goods(request):
             return HttpResponse('失败，请重试！')
 
 
+# 退货单查询
+def return_list_query(request):
+    if request.COOKIES.get('user_level') is None:  # 未登录
+        return redirect('/login')
+    if int(request.COOKIES.get('user_level')) is not 0:  # 非管理员
+        return redirect('/stock')
+
+    username = request.COOKIES.get('username')
+    ctx = {
+        'username': username
+    }
+    if request.method == 'POST':
+        msg = json.loads(request.body)
+        return_id = msg.get('return_id')
+        ctx.update(return_list_db_query(return_id))
+        return HttpResponse(json.dumps(ctx))
+    return render(request, 'return_list_query.html', ctx)
+
+
 # 进货
 def buy(request):
     if request.COOKIES.get('user_level') is None:  # 未登录

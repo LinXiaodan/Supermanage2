@@ -362,3 +362,58 @@ def buy_list_db_query(buy_id):
         return {
             'status': 'fail'
         }
+
+
+def return_list_db_query(return_id):
+    """
+        退货单查询-查询退货库记录
+        返回: {
+            'status': 'success'/'fail',
+            'list': {0:{id, name, quantity, buying_price, tot_price},
+                    1:.....}
+            'total': 总额,
+            'buy_id': 退货单号,
+            'time': now_time
+        }
+    """
+    try:
+        res = ReturnGoods.objects.filter(return_id=return_id)
+        if res:
+            return_set = {
+                'status': 'success'
+            }
+            return_list = {}
+            count = 0
+            total = 0
+            for var in res:
+                goods_id = var.goods_id
+                goods_obj = Stock.objects.get(goods_id=goods_id)
+                return_list.update({
+                    count: {
+                        'goods_id': goods_id,
+                        'goods_name': goods_obj.goods_name,
+                        'goods_quantity': var.goods_quantity,
+                        'buying_price': goods_obj.buying_price,
+                        'tot_price': round(goods_obj.buying_price*var.goods_quantity, 2)
+                    }
+                })
+                count += 1
+                total += round(goods_obj.buying_price*var.goods_quantity, 2)
+
+            return_set.update({
+                'list': return_list,
+                'total': total,
+                'return_id': return_id,
+                'time': res.first().time
+            })
+            return return_set
+
+        else:
+            return {
+                'status': 'fail'
+            }
+
+    except:
+        return {
+            'status': 'fail'
+        }
