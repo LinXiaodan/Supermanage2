@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'sale', view.sale),
     url(r'add_user', view.add_user),
     url(r'return_goods', view.return_goods),
+    url(r'query_buy_list', view.buy_list_query),
     url(r'buy', view.buy),
     url(r'logout', view.logout),
     url(r'query_stock', view.stock_query),

@@ -267,6 +267,25 @@ def buy(request):
             return HttpResponse('失败，请重试！')
 
 
+# 进货单查询
+def buy_list_query(request):
+    if request.COOKIES.get('user_level') is None:  # 未登录
+        return redirect('/login')
+    if int(request.COOKIES.get('user_level')) is not 0:  # 非管理员
+        return redirect('/stock')
+
+    username = request.COOKIES.get('username')
+    ctx = {
+        'username': username
+    }
+    if request.method == 'POST':
+        msg = json.loads(request.body)
+        buy_id = msg.get('buy_id')
+        ctx.update(buy_list_db_query(buy_id))
+        return HttpResponse(json.dumps(ctx))
+    return render(request, 'buy_list_query.html', ctx)
+
+
 # 添加用户
 def add_user(request):
     if request.COOKIES.get('user_level') is None:

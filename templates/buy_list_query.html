@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block headmore %}
+    <script type="text/javascript" language="javascript">
+        function formatDateTime(inputTime) {    //timestamp -> strip time
+            var date = new Date(inputTime);
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            var h = date.getHours();
+            h = h < 10 ? ('0' + h) : h;
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            minute = minute < 10 ? ('0' + minute) : minute;
+            second = second < 10 ? ('0' + second) : second;
+            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        }
+        function query(){   //查询销售单信息
+            var buy_id = $('#inputBuyId').val();
+            var msg = {'buy_id': buy_id};
+            $.post(
+                '/query_buy_list',
+                JSON.stringify(msg),
+                function (data) {
+                    var buy_list = jQuery.parseJSON(data);
+                    if(buy_list['status'] === 'fail'){
+                        $("#result").html('查询失败，请检查进货单编号是否正确或稍后重试');
+                    }
+                    else{
+                        // 打印进货单
+                        var result = $("<div class='panel panel-default'> <div class='panel-heading'> <h2 class='panel-title'>进货单 </h2></div> </div>");
+                        var body = $("<div class='panel-body'></div>");
+                        body.append("<div>单号：" + buy_list['buy_id'] + "</div>");
+                        body.append("<div>进货员：" + buy_list['username'] + "</div>");
+                        body.append("<div>时间：" + formatDateTime(parseInt(buy_list['time'])*1000) + "</div>");
+                        var table = $("<table class='table'><tr><th>编号</th><th>名称</th><th>进货价</th><th>数量</th><th>金额</th></tr></table>");
+                        var list = buy_list['list'];
+                        $.each(list,function(name,value) {
+                            var row = $("<tr></tr>");
+                            row.append("<td>" + value['goods_id'] + "</td>");
+                            row.append("<td>" + value['goods_name'] + "</td>");
+                            row.append("<td>" + value['buying_price'] + "</td>");
+                            row.append("<td>" + value['goods_quantity'] + "</td>");
+                            row.append("<td>" + value['tot_price'] + "</td>");
+                            table.append(row);
+                        });
+                        body.append(table);
+                        body.append("<div>总额：" + buy_list['total'] + "</div>");
+                        result.append(body);
+                        $("#result").html(result);
+                    }
+                }
+            )
+        }
+    </script>
+{% endblock %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+    <div class="container" style="width: 1800px;">
+        <div style="width: 300px; margin-left: auto; margin-right: auto">
+            <h2>进货单查询</h2>
+            <form class="form-addtype">
+                <input id="inputBuyId" class="form-control" placeholder="请输入进货单编号" required autofocus name="buy_id">
+                <button class="btn btn-lg btn-primary btn-block" type="button" onclick="query();">查询</button>
+            </form>
+        </div>
+        <br>
+        <div id="result"></div>
+    </div>
+{% endblock %}
