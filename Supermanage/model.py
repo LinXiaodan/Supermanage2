@@ -308,6 +308,7 @@ def sale_list_db_query(sale_id):
         }
 
 
+# 进货单查询
 def buy_list_db_query(buy_id):
     """
         进货单查询-查询进货库记录
@@ -364,6 +365,7 @@ def buy_list_db_query(buy_id):
         }
 
 
+# 退货单查询
 def return_list_db_query(return_id):
     """
         退货单查询-查询退货库记录
@@ -408,6 +410,68 @@ def return_list_db_query(return_id):
             })
             return return_set
 
+        else:
+            return {
+                'status': 'fail'
+            }
+
+    except:
+        return {
+            'status': 'fail'
+        }
+
+
+# 销售记录查询
+def sale_db_query(goods_id):
+    """
+        获取：商品编号
+        返回： {
+            'status': 'success'/'fail',
+            'list': {0: {sale_id, time, goods_quantity, sale_user}
+                     1:......},
+            'total_num': 销售总数量,
+            'total_price': 销售总额,
+            'goods_type': 商品种类
+            'goods_name': 商品名称
+            'unit': 商品单位
+            'quantity': 库存数量
+            'price': 售价
+        }
+    """
+    try:
+        res = Sale.objects.filter(goods_id=goods_id)
+
+        if res:
+            return_set = {
+                'status': 'success'
+            }
+            return_list = {}
+            count = 0
+            num = 0     # 销售数量
+            stock_obj = Stock.objects.get(goods_id=goods_id)
+            for var in res:
+                return_list.update({
+                    count: {
+                        'sale_id': var.sale_id,
+                        'time': var.time,
+                        'goods_quantity': var.goods_quantity,
+                        'sale_user': var.username
+                    }
+                })
+                count += 1
+                num += var.goods_quantity
+
+            return_set.update({
+                'list': return_list,
+                'total_num': num,
+                'total_price': num*stock_obj.price,
+                'goods_type': stock_obj.goods_type,
+                'goods_name': stock_obj.goods_name,
+                'unit': stock_obj.unit,
+                'quantity': stock_obj.quantity,
+                'price': stock_obj.price
+            })
+            return return_set
         else:
             return {
                 'status': 'fail'

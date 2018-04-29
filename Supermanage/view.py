@@ -219,6 +219,24 @@ def sale_list_query(request):
     return render(request, 'sale_list_query.html', ctx)
 
 
+# 销售记录查询
+def sale_query(request):
+    if request.COOKIES.get('user_level') is None:
+        return redirect('/login')
+
+    username = request.COOKIES.get('username')
+    ctx = {
+        'username': username
+    }
+    if request.method == 'POST':
+        msg = json.loads(request.body)
+        goods_id = msg.get('goods_id')
+        ctx.update(sale_db_query(goods_id))
+        return HttpResponse(json.dumps(ctx))
+
+    return render(request, 'sale_query.html', ctx)
+
+
 # 退货
 def return_goods(request):
     if request.COOKIES.get('user_level') is None:   # 未登录
@@ -262,6 +280,11 @@ def return_list_query(request):
     return render(request, 'return_list_query.html', ctx)
 
 
+# 退货记录查询
+def return_query(request):
+    return
+
+
 # 进货
 def buy(request):
     if request.COOKIES.get('user_level') is None:  # 未登录
@@ -303,6 +326,11 @@ def buy_list_query(request):
         ctx.update(buy_list_db_query(buy_id))
         return HttpResponse(json.dumps(ctx))
     return render(request, 'buy_list_query.html', ctx)
+
+
+# 进货记录查询
+def buy_query(request):
+    return
 
 
 # 添加用户

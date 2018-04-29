@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block headmore %}
+    <script type="text/javascript" language="javascript">
+        function formatDateTime(inputTime) {    //timestamp -> strip time
+            var date = new Date(inputTime);
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            var h = date.getHours();
+            h = h < 10 ? ('0' + h) : h;
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            minute = minute < 10 ? ('0' + minute) : minute;
+            second = second < 10 ? ('0' + second) : second;
+            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        }
+        function query(){   //根据商品编号查询销售记录
+            var goods_id = $('#inputGoodsId').val();
+            var msg = {'goods_id': goods_id};
+            $.post(
+                '/query_sale',
+                JSON.stringify(msg),
+                function (data) {
+                    var sale_list = jQuery.parseJSON(data);
+                    if(sale_list['status'] === 'fail'){
+                        $("#result").html('查询失败，请检查商品编号是否正确或稍后重试');
+                    }
+                    else{
+                        console.log(sale_list);
+
+                    }
+                }
+            )
+        }
+    </script>
+{% endblock %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+    <div class="container" style="width: 1800px;">
+        <div style="width: 300px; margin-left: auto; margin-right: auto">
+            <h2>销售记录查询</h2>
+            <form class="form-addtype">
+                <input id="inputGoodsId" class="form-control" placeholder="请输入商品编号" required autofocus name="goods_id">
+                <button class="btn btn-lg btn-primary btn-block" type="button" onclick="query();">查询</button>
+            </form>
+        </div>
+        <br>
+        <div id="result"></div>
+    </div>
+{% endblock %}
