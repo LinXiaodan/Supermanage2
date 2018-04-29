@@ -436,6 +436,7 @@ def sale_db_query(goods_id):
             'unit': 商品单位
             'quantity': 库存数量
             'price': 售价
+            'goods_id': 商品编号
         }
     """
     try:
@@ -469,7 +470,8 @@ def sale_db_query(goods_id):
                 'goods_name': stock_obj.goods_name,
                 'unit': stock_obj.unit,
                 'quantity': stock_obj.quantity,
-                'price': stock_obj.price
+                'price': stock_obj.price,
+                'goods_id': goods_id
             })
             return return_set
         else:

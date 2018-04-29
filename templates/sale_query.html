@@ -30,7 +30,30 @@
                     }
                     else{
                         console.log(sale_list);
-
+                        //销售记录显示
+                        var result = $("<div class='panel panel-default'> <div class='panel-heading'> <h2 class='panel-title'>销售记录 </h2></div> </div>");
+                        var body = $("<div class='panel-body'></div>");
+                        body.append("<div>商品编号：" + sale_list['goods_id'] + "</div>");
+                        body.append("<div>商品种类：" + sale_list['goods_type'] + "</div>");
+                        body.append("<div>商品名称：" + sale_list['goods_name'] + "</div>");
+                        body.append("<div>商品单位：" + sale_list['unit'] + "</div>");
+                        body.append("<div>库存数量：" + sale_list['quantity'] + "</div>");
+                        body.append("<div>售价（元）：" + sale_list['price'] +"</div>");
+                        body.append("<div>销售总数量：" + sale_list['total_num'] + "</div>");
+                        body.append("<div>销售总额（元）：" + sale_list['total_price'] + "</div>");
+                        var table = $("<table class='table'><tr><th>销售单号</th><th>时间</th><th>销售数量</th><th>销售员</th></tr></table>");
+                        var list = sale_list['list'];
+                        $.each(list,function(name,value) {
+                            var row = $("<tr></tr>");
+                            row.append("<td>" + value['sale_id'] + "</td>");
+                            row.append("<td>" + formatDateTime(parseInt(value['time'])*1000) + "</td>");
+                            row.append("<td>" + value['goods_quantity'] + "</td>");
+                            row.append("<td>" + value['sale_user'] + "</td>");
+                            table.append(row);
+                        });
+                        body.append(table);
+                        result.append(body);
+                        $("#result").html(result);
                     }
                 }
             )
