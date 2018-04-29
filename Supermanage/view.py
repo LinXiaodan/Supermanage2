@@ -202,6 +202,23 @@ def sale(request):
             return HttpResponse('失败，请重试！')
 
 
+# 销售单查询
+def sale_list_query(request):
+    if request.COOKIES.get('user_level') is None:
+        return redirect('/login')
+
+    username = request.COOKIES.get('username')
+    ctx = {
+        'username': username
+    }
+    if request.method == 'POST':
+        msg = json.loads(request.body)
+        sale_id = msg.get('sale_id')
+        ctx.update(sale_list_db_query(sale_id))
+        return HttpResponse(json.dumps(ctx))
+    return render(request, 'sale_list_query.html', ctx)
+
+
 # 退货
 def return_goods(request):
     if request.COOKIES.get('user_level') is None:   # 未登录
@@ -248,13 +265,6 @@ def buy(request):
             return HttpResponse(json.dumps(return_result))
         else:
             return HttpResponse('失败，请重试！')
-
-
-# 销售单页面
-def sale_list(request):
-    list_info = json.loads(request.COOKIES.get('list_info'))
-    print list_info
-    return HttpResponse('销售')
 
 
 # 添加用户

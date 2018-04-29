@@ -235,13 +235,74 @@ def addUser(user_level, username, password):
 
 # 查询库存信息,返回指定编号的商品库存信息
 def stock_db_query(goods_id):
-    res = Stock.objects.filter(goods_id=goods_id).first()
-    if res:
+    try:
+        res = Stock.objects.filter(goods_id=goods_id).first()
+        if res:
+            return {
+                'status': 'success',
+                'msg': res
+            }
+        else:
+            return {
+                'status': 'fail'
+            }
+    except:
         return {
-            'status': 'success',
-            'msg': res
+            'status': 'fail'
         }
-    else:
+
+
+# 销售单查询
+def sale_list_db_query(sale_id):
+    """
+        销售单查询-查询销售库记录
+        返回: {
+            'status': 'success'/'fail',
+            'list': {0:{id, name, quantity, price, tot_price},
+                    1:.....}
+            'total': 总额,
+            'sale_id': 销售单号,
+            'time': 销售时间戳
+        }
+    """
+    try:
+        res = Sale.objects.filter(sale_id=sale_id)
+        if res:
+            return_set = {
+                'status': 'success'
+            }
+            return_list = {}
+            count = 0
+            total = 0
+            for var in res:
+                goods_id = var.goods_id
+                goods_obj = Stock.objects.get(goods_id=goods_id)
+                return_list.update({
+                    count: {
+                        'goods_id': goods_id,
+                        'goods_name': goods_obj.goods_name,
+                        'goods_quantity': var.goods_quantity,
+                        'price': goods_obj.price,
+                        'tot_price': round(goods_obj.price*var.goods_quantity, 2)
+                    }
+                })
+                count += 1
+                total += round(goods_obj.price*var.goods_quantity, 2)
+
+            return_set.update({
+                'list': return_list,
+                'total': total,
+                'sale_id': sale_id,
+                'time': res.first().time
+            })
+            return return_set
+
+        else:
+            return {
+                'status': 'fail'
+            }
+
+    except:
         return {
             'status': 'fail'
         }

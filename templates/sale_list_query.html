@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block headmore %}
+    <script type="text/javascript" language="javascript">
+        function formatDateTime(inputTime) {    //timestamp -> strip time
+            var date = new Date(inputTime);
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            var h = date.getHours();
+            h = h < 10 ? ('0' + h) : h;
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            minute = minute < 10 ? ('0' + minute) : minute;
+            second = second < 10 ? ('0' + second) : second;
+            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        }
+        function query(){   //查询销售单信息
+            var sale_id = $('#inputSaleId').val();
+            var msg = {'sale_id': sale_id};
+            $.post(
+                '/query_sale_list',
+                JSON.stringify(msg),
+                function (data) {
+                    var sale_list = jQuery.parseJSON(data);
+                    if(sale_list['status'] === 'fail'){
+                        $("#result").html('查询失败，请检查销售单编号是否正确或稍后重试');
+                    }
+                    else{
+                        // 打印销售单
+                        var result = $("<div class='panel panel-default'> <div class='panel-heading'> <h2 class='panel-title'>销售单 </h2></div> </div>");
+                        var body = $("<div class='panel-body'></div>");
+                        body.append("<div>单号：" + sale_list['sale_id'] + "</div>");
+                        body.append("<div>销售员：" + sale_list['username'] + "</div>");
+                        body.append("<div>时间：" + formatDateTime(parseInt(sale_list['time'])*1000) + "</div>");
+                        var table = $("<table class='table'><tr><th>编号</th><th>名称</th><th>单价</th><th>数量</th><th>金额</th></tr></table>");
+                        var list = sale_list['list'];
+                        $.each(list,function(name,value) {
+                            var row = $("<tr></tr>");
+                            row.append("<td>" + value['goods_id'] + "</td>");
+                            row.append("<td>" + value['goods_name'] + "</td>");
+                            row.append("<td>" + value['price'] + "</td>");
+                            row.append("<td>" + value['goods_quantity'] + "</td>");
+                            row.append("<td>" + value['tot_price'] + "</td>");
+                            table.append(row);
+                        });
+                        body.append(table);
+                        body.append("<div>总额：" + sale_list['total'] + "</div>");
+                        result.append(body);
+                        $("#result").html(result);
+                    }
+                }
+            )
+        }
+    </script>
+{% endblock %}
+
+{% block username %}
+{{ username }}
+{% endblock %}
+
+{% block container %}
+    <div class="container" style="width: 1800px;">
+        <div style="width: 300px; margin-left: auto; margin-right: auto">
+            <h2>销售单查询</h2>
+            <form class="form-addtype">
+                <input id="inputSaleId" class="form-control" placeholder="请输入销售单编号" required autofocus name="sale_id">
+                <button class="btn btn-lg btn-primary btn-block" type="button" onclick="query();">查询</button>
+            </form>
+        </div>
+        <br>
+        <div id="result"></div>
+    </div>
+{% endblock %}
