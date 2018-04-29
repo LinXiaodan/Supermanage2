@@ -28,7 +28,9 @@
                         }
                         table.append(row1);
                         table.append(row2);
-                       $('#result').html(table);
+                        var result = $('<div><h4>查询结果</h4></div>');
+                        result.append(table);
+                        $('#result').html(result);
                     }
                 }
             )

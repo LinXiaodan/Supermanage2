@@ -75,15 +75,20 @@ def stock_query(request):
     if request.COOKIES.get('user_level') is None:
         return redirect('/login')
 
+    username = request.COOKIES.get('username')
+    ctx = {
+        'username': username
+    }
     if request.method == 'POST':
         msg = json.loads(request.body)
         goods_id = msg.get('goods_id')
         query_list = stock_db_query(goods_id)
         user_level = request.COOKIES.get('user_level')
-        ctx = {}
 
         if query_list.get('status') == 'fail':
-            ctx = query_list
+            ctx.update({
+                'status': 'fail'
+            })
         else:
             ctx.update({
                 'status': 'success'
@@ -93,17 +98,22 @@ def stock_query(request):
                     'info_list': ['编号', '种类', '名称', '单位', '库存量', '进货价（元）', '售价（元）']
                 })
                 msg = query_list.get('msg')
-                # ctx.update({
-                #     'show_list': [msg.get('goods_id'), msg.get('goods_type'), msg.get('goods_name'), msg.get('unit'),
-                #                   msg.get('quantity'), msg.get('buying_price'), msg.get('price')]
-                # })
                 ctx.update({
                     'show_list': [msg.goods_id, msg.goods_type, msg.goods_name, msg.unit, msg.quantity,
                                   msg.buying_price, msg.price]
                 })
+            elif user_level == '1':
+                ctx.update({
+                    'info_list': ['编号', '种类', '名称', '单位', '库存量', '售价（元）']
+                })
+                msg = query_list.get('msg')
+                ctx.update({
+                    'show_list': [msg.goods_id, msg.goods_type, msg.goods_name, msg.unit, msg.quantity,
+                                  msg.price]
+                })
         return HttpResponse(json.dumps(ctx))
-        # return HttpResponse(json.dumps(query_res))
-    return render(request, 'stock_query.html')
+
+    return render(request, 'stock_query.html', ctx)
 
 
 # 添加商品种类

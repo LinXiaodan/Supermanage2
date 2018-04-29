@@ -235,21 +235,8 @@ def addUser(user_level, username, password):
 
 # 查询库存信息,返回指定编号的商品库存信息
 def stock_db_query(goods_id):
-    print goods_id
     res = Stock.objects.filter(goods_id=goods_id).first()
     if res:
-        # return {
-        #     'status': 'success',
-        #     'msg': {
-        #         'goods_id': res.goods_id,
-        #         'goods_type': res.goods_type,
-        #         'goods_name': res.goods_name,
-        #         'unit': res.unit,
-        #         'quantity': res.quantity,
-        #         'buying_price': res.buying_price,
-        #         'price': res.price
-        #     }
-        # }
         return {
             'status': 'success',
             'msg': res
