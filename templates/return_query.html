@@ -17,38 +17,38 @@
             second = second < 10 ? ('0' + second) : second;
             return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
         }
-        function query(){   //根据商品编号查询进货记录
+        function query(){   //根据商品编号查询退货记录
             var goods_id = $('#inputGoodsId').val();
             var msg = {'goods_id': goods_id};
             $.post(
-                '/query_buy',
+                '/query_return',
                 JSON.stringify(msg),
                 function (data) {
-                    var buy_list = jQuery.parseJSON(data);
-                    if(buy_list['status'] === 'fail'){
+                    var return_list = jQuery.parseJSON(data);
+                    if(return_list['status'] === 'fail'){
                         $("#result").html('查询失败，请检查商品编号是否正确或稍后重试');
                     }
                     else{
-                        //进货记录显示
-                        var result = $("<div class='panel panel-default'> <div class='panel-heading'> <h2 class='panel-title'>进货记录 </h2></div> </div>");
+                        //退货记录显示
+                        var result = $("<div class='panel panel-default'> <div class='panel-heading'> <h2 class='panel-title'>退货记录 </h2></div> </div>");
                         var body = $("<div class='panel-body'></div>");
-                        body.append("<div>商品编号：" + buy_list['goods_id'] + "</div>");
-                        body.append("<div>商品种类：" + buy_list['goods_type'] + "</div>");
-                        body.append("<div>商品名称：" + buy_list['goods_name'] + "</div>");
-                        body.append("<div>商品单位：" + buy_list['unit'] + "</div>");
-                        body.append("<div>库存数量：" + buy_list['quantity'] + "</div>");
-                        body.append("<div>进货价（元）：" + buy_list['buying_price'] +"</div>");
-                        body.append("<div>售价（元）：" + buy_list['price'] +"</div>");
-                        body.append("<div>进货总数量：" + buy_list['total_num'] + "</div>");
-                        body.append("<div>进货总额（元）：" + buy_list['total_price'] + "</div>");
-                        var table = $("<table class='table'><tr><th>进货单号</th><th>时间</th><th>进货数量</th><th>进货员</th></tr></table>");
-                        var list = buy_list['list'];
+                        body.append("<div>商品编号：" + return_list['goods_id'] + "</div>");
+                        body.append("<div>商品种类：" + return_list['goods_type'] + "</div>");
+                        body.append("<div>商品名称：" + return_list['goods_name'] + "</div>");
+                        body.append("<div>商品单位：" + return_list['unit'] + "</div>");
+                        body.append("<div>库存数量：" + return_list['quantity'] + "</div>");
+                        body.append("<div>进货价（元）：" + return_list['buying_price'] +"</div>");
+                        body.append("<div>售价（元）：" + return_list['price'] +"</div>");
+                        body.append("<div>退货总数量：" + return_list['total_num'] + "</div>");
+                        body.append("<div>退货总额（元）：" + return_list['total_price'] + "</div>");
+                        var table = $("<table class='table'><tr><th>退货单号</th><th>时间</th><th>退货数量</th><th>退货员</th></tr></table>");
+                        var list = return_list['list'];
                         $.each(list,function(name,value) {
                             var row = $("<tr></tr>");
-                            row.append("<td>" + value['buy_id'] + "</td>");
+                            row.append("<td>" + value['return_id'] + "</td>");
                             row.append("<td>" + formatDateTime(parseInt(value['time'])*1000) + "</td>");
                             row.append("<td>" + value['goods_quantity'] + "</td>");
-                            row.append("<td>" + value['buy_user'] + "</td>");
+                            row.append("<td>" + value['return_user'] + "</td>");
                             table.append(row);
                         });
                         body.append(table);
@@ -68,7 +68,7 @@
 {% block container %}
     <div class="container" style="width: 1800px;">
         <div style="width: 300px; margin-left: auto; margin-right: auto">
-            <h2>进货记录查询</h2>
+            <h2>退货记录查询</h2>
             <form class="form-addtype">
                 <input id="inputGoodsId" class="form-control" placeholder="请输入商品编号" required autofocus name="goods_id">
                 <button class="btn btn-lg btn-primary btn-block" type="button" onclick="query();">查询</button>
