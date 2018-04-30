@@ -483,3 +483,67 @@ def sale_db_query(goods_id):
         return {
             'status': 'fail'
         }
+
+
+# 进货记录查询
+def buy_db_query(goods_id):
+    """
+            获取：商品编号
+            返回： {
+                'status': 'success'/'fail',
+                'list': {0: {buy_id, time, goods_quantity, buy_user}
+                         1:......},
+                'total_num': 销售总数量,
+                'total_price': 销售总额,
+                'goods_type': 商品种类,
+                'goods_name': 商品名称,
+                'unit': 商品单位,
+                'quantity': 库存数量,
+                'price': 售价,
+                'goods_id': 商品编号
+            }
+        """
+    try:
+        res = Buying.objects.filter(goods_id=goods_id)
+
+        if res:
+            return_set = {
+                'status': 'success'
+            }
+            return_list = {}
+            count = 0
+            num = 0  # 进货数量
+            stock_obj = Stock.objects.get(goods_id=goods_id)
+            for var in res:
+                return_list.update({
+                    count: {
+                        'buy_id': var.buy_id,
+                        'time': var.time,
+                        'goods_quantity': var.goods_quantity,
+                        'buy_user': var.username
+                    }
+                })
+                count += 1
+                num += var.goods_quantity
+
+            return_set.update({
+                'list': return_list,
+                'total_num': num,
+                'total_price': num * stock_obj.price,
+                'goods_type': stock_obj.goods_type,
+                'goods_name': stock_obj.goods_name,
+                'unit': stock_obj.unit,
+                'quantity': stock_obj.quantity,
+                'price': stock_obj.price,
+                'goods_id': goods_id
+            })
+            return return_set
+        else:
+            return {
+                'status': 'fail'
+            }
+
+    except:
+        return {
+            'status': 'fail'
+        }

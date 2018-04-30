@@ -330,7 +330,21 @@ def buy_list_query(request):
 
 # 进货记录查询
 def buy_query(request):
-    return
+    if request.COOKIES.get('user_level') is None:  # 未登录
+        return redirect('/login')
+    if int(request.COOKIES.get('user_level')) is not 0:  # 非管理员
+        return redirect('/stock')
+
+    username = request.COOKIES.get('username')
+    ctx = {
+        'username': username
+    }
+    if request.method == 'POST':
+        msg = json.loads(request.body)
+        goods_id = msg.get('goods_id')
+        ctx.update(buy_db_query(goods_id))
+        return HttpResponse(json.dumps(ctx))
+    return render(request, 'buy_query.html', ctx)
 
 
 # 添加用户
